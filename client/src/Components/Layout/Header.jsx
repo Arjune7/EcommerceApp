@@ -1,63 +1,75 @@
 import { NavLink, Link } from "react-router-dom";
 import { GiShoppingCart } from "react-icons/gi";
+import { useAuth } from "../../Context/auth";
+import { toast } from "react-hot-toast";
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
 
 function Header() {
+  const [auth, setAuth] = useAuth();
+
+  const handleLogout = () => {
+    setAuth({
+      ...auth,
+      user: null,
+      token: "",
+    });
+    localStorage.removeItem("auth");
+    toast.success("Logout Successful");
+  };
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary">
-        <div className="container-fluid">
-          <Link className="navbar-brand">
-            <GiShoppingCart size={35} /> ShopGrop
-          </Link>
-
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <NavLink to="/" className="nav-link ">
+      <Navbar bg="light" expand="lg" className="navbar">
+        <Container>
+          <Navbar.Brand>
+            {/* <GiShoppingCart size={30} style={{ marginRight: "1rem" }} /> */}
+            🛒 Ecommerce App
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto">
+              <Nav.Link>
+                <NavLink style={{ textDecoration: "none", color: "inherit" }} to="/">
                   Home
                 </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/category" className="nav-link ">
+              </Nav.Link>
+              <Nav.Link style={{ textDecoration: "none", color: "inherit" }}>
+                <NavLink style={{ textDecoration: "none", color: "inherit" }} to="/category">
                   Category
                 </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/register" className="nav-link ">
-                  Register
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/login" className="nav-link ">
-                  Login
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/cart" className="nav-link">
-                  Cart(0)
-                </NavLink>
-              </li>
-            </ul>
-            {/* <form className="d-flex" role="search">
-              <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-              <button className="btn btn-outline-success" type="submit">
-                Search
-              </button>
-            </form> */}
-          </div>
-        </div>
-      </nav>
+              </Nav.Link>
+
+              {!auth?.user ? (
+                <>
+                  <Nav.Link style={{ textDecoration: "none", color: "inherit" }}>
+                    <NavLink style={{ textDecoration: "none", color: "inherit" }} to="/register">
+                      Register
+                    </NavLink>
+                  </Nav.Link>
+                  <Nav.Link style={{ textDecoration: "none", color: "inherit" }}>
+                    <NavLink style={{ textDecoration: "none", color: "inherit" }} to="/login">
+                      Login
+                    </NavLink>
+                  </Nav.Link>
+                </>
+              ) : (
+                <>
+                  <NavDropdown title={auth?.user?.name} id="basic-nav-dropdown">
+                    <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
+                    <NavDropdown.Item href="#action/3.3">
+                      <NavLink style={{ textDecoration: "none", color: "inherit" }} to="/dashboard">
+                        DashBoard
+                      </NavLink>
+                    </NavDropdown.Item>
+                  </NavDropdown>
+                </>
+              )}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
     </>
   );
 }
